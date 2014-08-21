@@ -8,6 +8,10 @@
 
 #define SENSOR_DHT_PIN 2
 
+#define RED_LED_PIN 3
+#define GREEN_LED_PIN 6
+#define BLUE_LED_PIN 5
+
 DHT dht;
 
 // MAC address and IP address for controller.
@@ -18,12 +22,19 @@ IPAddress ip(192,168,1,100);
 // (port 80 is default for HTTP).
 EthernetServer server(80);
 
+int brightness = 0; // How bright the LED is.
+int fadeAmount = 5; // How many points to fade the LED by.
+
 // The setup routine runs once at startup.
 void setup() {
   Serial.begin(9600);
   Serial.println("Status\tHumidity (%)\tTemperature (C)");
 
   dht.setup(SENSOR_DHT_PIN);
+
+  pinMode(RED_LED_PIN, OUTPUT);
+  pinMode(GREEN_LED_PIN, OUTPUT);
+  pinMode(BLUE_LED_PIN, OUTPUT);
 
   // Start the Ethernet connection and the server.
   Ethernet.begin(mac, ip);
@@ -36,6 +47,18 @@ void loop() {
 
   int humidity = dht.getHumidity();
   int temperature = dht.getTemperature();
+
+  analogWrite(RED_LED_PIN, brightness);
+  analogWrite(GREEN_LED_PIN, brightness);
+  analogWrite(BLUE_LED_PIN, brightness);
+
+  // change the brightness for next time through the loop:
+  brightness = brightness + fadeAmount;
+
+  // reverse the direction of the fading at the ends of the fade:
+  if (brightness == 0 || brightness == 255) {
+    fadeAmount = -fadeAmount ;
+  }
 
   // Listen for incoming clients.
   EthernetClient client = server.available();
