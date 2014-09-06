@@ -14,7 +14,6 @@ data = string.split(row, ' ')
 
 if data[0] == 'OK':
     data.pop(0)
-    print data
 
     db = MySQLdb.connect(host=env['DB_HOST'],
                          user=env['DB_USER'],
@@ -24,7 +23,7 @@ if data[0] == 'OK':
     cursor = db.cursor()
 
     try:
-        cursor.execute("""INSERT INTO sensors ('humidity', 'temperature') VALUES (%s,%s)""",(data[0],data[1]))
+        cursor.execute("""INSERT INTO sensors (humidity, temperature) VALUES (%s,%s)""",(data[0],data[1]))
         db.commit()
     except:
         db.rollback()
