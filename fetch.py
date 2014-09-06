@@ -1,10 +1,11 @@
 import urllib2
 import string
 import MySQLdb
+import os
 from dotenv import Dotenv
 
 url = 'http://192.168.1.100'
-env = Dotenv('.env')
+env = Dotenv(os.getcwd() + '/.env')
 
 socket = urllib2.urlopen(url)
 row = socket.read()
