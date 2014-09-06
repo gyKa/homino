@@ -29,4 +29,4 @@ if data[0] == 'OK':
     except:
         db.rollback()
 
-    conn.close()
+    db.close()
