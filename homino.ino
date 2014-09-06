@@ -12,6 +12,11 @@
 #define GREEN_LED_PIN 6
 #define BLUE_LED_PIN 5
 
+const int MIN_COMFORTABLE_TEMPERATURE_SOFT = 19;
+const int MAX_COMFORTABLE_TEMPERATURE_SOFT = 23;
+const int MIN_COMFORTABLE_TEMPERATURE_HARD = MIN_COMFORTABLE_TEMPERATURE_SOFT - 2;
+const int MAX_COMFORTABLE_TEMPERATURE_HARD = MAX_COMFORTABLE_TEMPERATURE_SOFT - 2;
+
 DHT dht;
 
 // MAC address and IP address for controller.
@@ -22,8 +27,10 @@ IPAddress ip(192,168,1,100);
 // (port 80 is default for HTTP).
 EthernetServer server(80);
 
-int brightness = 0; // How bright the LED is.
-int fadeAmount = 5; // How many points to fade the LED by.
+// How bright the LED is.
+int redLedBrightness = 0; 
+int greenLedBrightness = 0;
+int blueLedBrightness = 0;
 
 // The setup routine runs once at startup.
 void setup() {
@@ -48,17 +55,11 @@ void loop() {
   int humidity = dht.getHumidity();
   int temperature = dht.getTemperature();
 
-  analogWrite(RED_LED_PIN, brightness);
-  analogWrite(GREEN_LED_PIN, brightness);
-  analogWrite(BLUE_LED_PIN, brightness);
+  setLedsBrightness(temperature);
 
-  // change the brightness for next time through the loop:
-  brightness = brightness + fadeAmount;
-
-  // reverse the direction of the fading at the ends of the fade:
-  if (brightness == 0 || brightness == 255) {
-    fadeAmount = -fadeAmount ;
-  }
+  analogWrite(RED_LED_PIN, redLedBrightness);
+  analogWrite(GREEN_LED_PIN, greenLedBrightness);
+  analogWrite(BLUE_LED_PIN, blueLedBrightness);
 
   // Listen for incoming clients.
   EthernetClient client = server.available();
@@ -92,4 +93,28 @@ void loop() {
   Serial.print(humidity);
   Serial.print("\t\t");
   Serial.println(temperature);
+}
+
+void setLedsBrightness(int temperature) {
+  if (temperature < MIN_COMFORTABLE_TEMPERATURE_HARD) {
+    redLedBrightness = 0;
+    greenLedBrightness = 0;
+    blueLedBrightness = 50;
+  } else if (temperature >= MAX_COMFORTABLE_TEMPERATURE_HARD && temperature < MIN_COMFORTABLE_TEMPERATURE_SOFT) {
+    redLedBrightness = 0;
+    greenLedBrightness = 50;
+    blueLedBrightness = 50;
+  } else if (temperature >= MIN_COMFORTABLE_TEMPERATURE_SOFT && temperature <= MAX_COMFORTABLE_TEMPERATURE_SOFT) {
+    redLedBrightness = 0;
+    greenLedBrightness = 250;
+    blueLedBrightness = 0;
+  } else if (temperature > MAX_COMFORTABLE_TEMPERATURE_SOFT && temperature <= MAX_COMFORTABLE_TEMPERATURE_HARD) {
+    redLedBrightness = 20; // 50 is too high
+    greenLedBrightness = 50;
+    blueLedBrightness = 0;
+  } else {
+    redLedBrightness = 20; // 50 is too high
+    greenLedBrightness = 0;
+    blueLedBrightness = 0;
+  }
 }
