@@ -73,14 +73,11 @@ void loop() {
           client.println("Connection: close");  // The connection will be closed after completion of the response.
           client.println("Refresh: 60");  // Refresh the page automatically every 60 sec.
           client.println();
-          client.println("<!DOCTYPE html>");
-          client.println("<html><body>");
           client.print(dht.getStatusString());
           client.print(" ");
           client.print(humidity);
           client.print(" ");
           client.print(temperature);
-          client.println("</body></html>");
           break;
       }
     }
