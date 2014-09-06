@@ -5,7 +5,7 @@ import os
 from dotenv import Dotenv
 
 url = 'http://192.168.1.100'
-env = Dotenv(os.getcwd() + '/.env')
+env = Dotenv(os.path.dirname(os.path.realpath(__file__)) + '/.env')
 
 socket = urllib2.urlopen(url)
 row = socket.read()
